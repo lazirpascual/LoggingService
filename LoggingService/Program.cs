@@ -29,6 +29,8 @@ namespace LoggingService
 {
     class Program
     {
+        static LoggingEngine logEngine = new LoggingEngine();
+
         static void Main(string[] args)
         {
             TcpListener server = null;
@@ -80,7 +82,7 @@ namespace LoggingService
             NetworkStream stream = client.GetStream();
 
             request = ReceiveRequest(stream);
-            
+            response = logEngine.ProcessRequest(request);
             SendResponse(stream, response);
 
             client.Close(); // Shutdown and end connection
