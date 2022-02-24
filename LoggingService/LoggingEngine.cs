@@ -13,6 +13,8 @@ namespace LoggingService
     class LoggingEngine
     {
         string logPath = "./ServiceLog.txt";
+        string logFormat = ConfigurationManager.AppSettings.Get("logFormat");
+        string logMessage = "";
 
         /*  -- Function Header
             Name	:	ProcessRequest()
@@ -36,7 +38,16 @@ namespace LoggingService
                 case "LOGTEST":
                     string errorLevel = qsCollection["errorLevel"];
                     string message = qsCollection["message"];
-                    string logMessage = $"{timeStamp} {local_ip} {hostname} {errorLevel}: {message}";
+
+                    if (logFormat == "STANDARD")
+                    {
+                        logMessage = $"{timeStamp} {local_ip} {hostname} {errorLevel}: {message}";
+                    }
+                    else if (logFormat == "NCSA")
+                    {
+                        logMessage = $"{local_ip} - {hostname} [{timeStamp}] {errorLevel}: {message} {queryString.Length}";
+                    }
+                    
                     LogText(logMessage, logPath);
                     response = $"{errorLevel} level successfully logged.";
                     break;

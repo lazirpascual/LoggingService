@@ -77,15 +77,15 @@ namespace LoggingService
         }
 
         /*  -- Function Header
-    Name	:	Worker()
-    Purpose :	This method is passed to a thread as a parameter, which executes when the
-                server receives and accepts a connection from the Client socket. It contains
-                the different responses to the requests sent from the client. This method
-                also contains the main game logic of the Hi-Lo game, where the min, max,
-                random values are determined and the state is managed.
-    Inputs	:	Object o - the TCP client object that the server is currently listening to
-    Returns	:	NONE
-*/
+            Name	:	Worker()
+            Purpose :	This method is passed to a thread as a parameter, which executes when the
+                        server receives and accepts a connection from the Client socket. It contains
+                        the different responses to the requests sent from the client. This method
+                        also contains the main game logic of the Hi-Lo game, where the min, max,
+                        random values are determined and the state is managed.
+            Inputs	:	Object o - the TCP client object that the server is currently listening to
+            Returns	:	NONE
+        */
         public static void Worker(Object o)
         {
             TcpClient client = (TcpClient)o;
