@@ -27,7 +27,7 @@ namespace LoggingService
 
             switch (requestType)
             {
-                case "TEST":
+                case "TEST1":
                     response = "Hi python! I am C#";
                     break;
                 default:

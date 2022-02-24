@@ -36,8 +36,10 @@ namespace LoggingService
             TcpListener server = null;
             try
             {
-                Int32 port = 13000; // Set the TcpListener on port 13000.
-                server = new TcpListener(IPAddress.Any, port);
+                Int32 port = Int32.Parse(ConfigurationManager.AppSettings.Get("port"));
+                string ipAddress = ConfigurationManager.AppSettings.Get("ipAddress"); // read minValue from config file
+                IPAddress localAddr = IPAddress.Parse(ipAddress);
+                server = new TcpListener(localAddr, port);
                 server.Start(); // Start listening for client requests.
                 Console.Write("Server is currently running.\n");
                 Console.Write("Waiting for a connection... \n\n");
