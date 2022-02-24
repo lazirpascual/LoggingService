@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using System.Web;
 using System.Configuration;
+using System.IO;
 
 namespace LoggingService
 {
     class LoggingEngine
     {
+        string logPath = "./ServiceLog.txt";
+
         /*  -- Function Header
             Name	:	ProcessRequest()
             Purpose :	This method is is used to process the request that the client is sending to the server.
@@ -23,20 +26,42 @@ namespace LoggingService
         {
             NameValueCollection qsCollection = HttpUtility.ParseQueryString(queryString);  // parse query string sent from client
             string requestType = qsCollection["request"];   // parse request type of the query string           
+            string timeStamp = qsCollection["timeStamp"];
+            string hostname = qsCollection["hostname"];
+            string local_ip = qsCollection["local_ip"];
             string response = null;
 
             switch (requestType)
             {
-                case "TEST1":
-                    response = "Hi python! I am C#";
+                case "LOGTEST":
+                    string errorLevel = qsCollection["errorLevel"];
+                    string message = qsCollection["message"];
+                    string logMessage = $"{timeStamp} {local_ip} {hostname} {errorLevel}: {message}";
+                    LogText(logMessage, logPath);
+                    response = $"{errorLevel} level successfully logged.";
                     break;
                 default:
                     response = "Command unknown";
                     break;
             }
 
-            DisplayOutput(queryString, response, requestType);
+            DisplayOutput(queryString, response, requestType, local_ip);
             return response;
+        }
+
+        /*  -- Function Header Comment
+            Name	      :	LogText()
+            Purpose       :	This method logs events such as starting the server, stopping the server, 
+                            requests, responses and any exceptions encountered, to a text file.
+            Inputs	      :	string message - message that is being sent to the text file
+            Returns	      :	NONE
+        */
+        public void LogText(string message, string logPath)
+        {
+            using (StreamWriter w = File.AppendText(logPath))
+            {
+                w.Write($"{message}\n");
+            }
         }
 
         /*  -- Function Header
@@ -49,9 +74,9 @@ namespace LoggingService
                         string responseType - type of request currently being processed
             Returns	:	NONE
         */
-        public void DisplayOutput(string request, string response, string requestType)
+        public void DisplayOutput(string request, string response, string requestType, string ipAddress)
         {
-            Console.WriteLine($"A client has connected with a {requestType} request.");
+            Console.WriteLine($"A client with IP of {ipAddress} has connected with a {requestType} request.");
             Console.WriteLine("Received: {0}", request);
             Console.WriteLine("Sent: {0}\n", response);
         }
