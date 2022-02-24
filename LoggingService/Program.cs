@@ -34,17 +34,6 @@ namespace LoggingService
 
         static void Main(string[] args)
         {
-            //string filePath  =  "";
-            //if(args.Length == 0 || args.Length > 2)
-            //{
-            //    Console.WriteLine("ERROR\n");
-
-            //}
-            //else
-            //{
-            //    filePath = args[1];
-            //}
-            //Console.WriteLine(filePath);
             TcpListener server = null;
             try
             {

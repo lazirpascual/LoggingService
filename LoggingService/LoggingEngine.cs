@@ -12,7 +12,7 @@ namespace LoggingService
 {
     class LoggingEngine
     {
-        string logPath = "./ServiceLog.txt";
+        string logPath = ConfigurationManager.AppSettings.Get("logPath");
         string logFormat = ConfigurationManager.AppSettings.Get("logFormat");
         string logMessage = "";
 
@@ -47,7 +47,13 @@ namespace LoggingService
                     {
                         logMessage = $"{local_ip} - {hostname} [{timeStamp}] {errorLevel}: {message} {queryString.Length}";
                     }
-                    
+                    else if (logFormat == "W3C")
+                    {
+                        string destination_ip = ConfigurationManager.AppSettings.Get("ipAddress");
+                        string port = ConfigurationManager.AppSettings.Get("port");
+                        logMessage = $"{timeStamp} LOG TCP {local_ip} {destination_ip} {port} {queryString.Length} {errorLevel}: {message}";
+                    }
+
                     LogText(logMessage, logPath);
                     response = $"{errorLevel} level successfully logged.";
                     break;
