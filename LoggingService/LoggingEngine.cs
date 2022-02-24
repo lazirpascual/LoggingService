@@ -27,31 +27,31 @@ namespace LoggingService
         public string ProcessRequest(string queryString)
         {
             NameValueCollection qsCollection = HttpUtility.ParseQueryString(queryString);  // parse query string sent from client
-            string requestType = qsCollection["request"];   // parse request type of the query string           
-            string timeStamp = qsCollection["timeStamp"];
-            string hostname = qsCollection["hostname"];
+            string requestType = qsCollection["request"];   // parse request type of the query string
             string local_ip = qsCollection["local_ip"];
             string response = null;
 
             switch (requestType)
             {
-                case "LOGTEST":
+                case "LOGGING":
+                    DateTime localDate = DateTime.Now;
+                    string hostname = qsCollection["hostname"];                  
                     string errorLevel = qsCollection["errorLevel"];
                     string message = qsCollection["message"];
 
-                    if (logFormat == "STANDARD")
+                    if (logFormat.ToLower() == "standard")
                     {
-                        logMessage = $"{timeStamp} {local_ip} {hostname} {errorLevel}: {message}";
+                        logMessage = $"{localDate} {local_ip} {hostname} {errorLevel}: {message}";
                     }
-                    else if (logFormat == "NCSA")
+                    else if (logFormat.ToLower() == "ncsa")
                     {
-                        logMessage = $"{local_ip} - {hostname} [{timeStamp}] {errorLevel}: {message} {queryString.Length}";
+                        logMessage = $"{local_ip} - {hostname} [{localDate}] {errorLevel}: {message} {queryString.Length}";
                     }
-                    else if (logFormat == "W3C")
+                    else if (logFormat.ToLower() == "w3c")
                     {
                         string destination_ip = ConfigurationManager.AppSettings.Get("ipAddress");
                         string port = ConfigurationManager.AppSettings.Get("port");
-                        logMessage = $"{timeStamp} LOG TCP {local_ip} {destination_ip} {port} {queryString.Length} {errorLevel}: {message}";
+                        logMessage = $"{localDate} LOG TCP {local_ip} {destination_ip} {port} {queryString.Length} {errorLevel}: {message}";
                     }
 
                     LogText(logMessage, logPath);
