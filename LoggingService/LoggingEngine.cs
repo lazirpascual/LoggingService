@@ -12,6 +12,7 @@ namespace LoggingService
 {
     class LoggingEngine
     {
+        private static Dictionary<string, Dictionary<int, string>> IP_Tracker = new Dictionary<string, Dictionary<int, string>>();
         string logPath = ConfigurationManager.AppSettings.Get("logPath");
         string logFormat = ConfigurationManager.AppSettings.Get("logFormat");
         string logMessage = "";
@@ -34,6 +35,7 @@ namespace LoggingService
             switch (requestType)
             {
                 case "LOGGING":
+                    preventAbuse(local_ip);
                     DateTime localDate = DateTime.Now;
                     string hostname = qsCollection["hostname"];                  
                     string errorLevel = qsCollection["errorLevel"];
@@ -64,6 +66,23 @@ namespace LoggingService
 
             DisplayOutput(queryString, response, requestType, local_ip);
             return response;
+        }
+
+        public string preventAbuse(string currentIP)
+        {         
+            if (!(IP_Tracker.ContainsKey(currentIP)))
+            {
+                Dictionary<int, string> currentIPCount = new Dictionary<int, string>();
+                currentIPCount.Add(currentIPCount.Count, DateTime.Now.ToString());
+                IP_Tracker.Add(currentIP, currentIPCount);
+            }
+            else
+            {
+                var currentIPValue = IP_Tracker[currentIP];
+                currentIPValue.Add(currentIPValue.Count, DateTime.Now.ToString());
+            }
+
+            return null;
         }
 
         /*  -- Function Header Comment

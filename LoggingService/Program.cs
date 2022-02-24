@@ -31,7 +31,6 @@ namespace LoggingService
     {
         static LoggingEngine logEngine = new LoggingEngine();
         
-
         static void Main(string[] args)
         {
             TcpListener server = null;
