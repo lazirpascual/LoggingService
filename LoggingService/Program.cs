@@ -1,9 +1,9 @@
 ﻿/*
-FILE                : TestingClient.py
+FILE                : Program.cs
 PROJECT			    : A3 - Network Application Development
 PROGRAMMER		    : Lazir Pascual, Rohullah Noory
 FIRST VERSION       : 2/15/2022
-DESCRIPTION		    :
+DESCRIPTION		    : This file contains the main source needed to start the logging server.
 */
 
 using System;

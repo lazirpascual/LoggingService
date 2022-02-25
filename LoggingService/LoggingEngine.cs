@@ -1,4 +1,15 @@
-﻿using System;
+﻿
+/*
+FILE                : LoggingEngine.cs
+PROJECT			    : A3 - Network Application Development
+PROGRAMMER		    : Lazir Pascual, Rohullah Noory
+FIRST VERSION       : 2/15/2022
+DESCRIPTION		    : This file contains the source code needed for the functionalities of the logging service, This includes
+                      processing the requests received from the client, protection against spam requests and writing log messags to a plain text file.
+*/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +35,7 @@ namespace LoggingService
         /*  -- Function Header
             Name	:	ProcessRequest()
             Purpose :	This method is is used to process the request that the client is sending to the server.
-                        Depending on the request type, it will perform the game logic accordingly and sends back
+                        Depending on the request type, it will perform the logging logic accordingly and sends back
                         a response.
             Inputs	:	string queryString - query string that is being processed (sent from the client)
             Returns	:	response being sent back to the client
@@ -90,6 +101,13 @@ namespace LoggingService
             return response;
         }
 
+
+        /*  -- Function Header
+            Name	:	checkLogAbuse()
+            Purpose :	This method is used to ensure a client is not spam sending requests.
+            Inputs	:	string currentIP - IP address of the client as a string
+            Returns	:	a message if too many requests have been received within a short amount of time or null if otherwise
+        */
         public string checkLogAbuse(string currentIP)
         {         
             if (!(IP_Tracker.ContainsKey(currentIP)))
@@ -127,9 +145,9 @@ namespace LoggingService
 
         /*  -- Function Header Comment
             Name	      :	LogText()
-            Purpose       :	This method logs events such as starting the server, stopping the server, 
-                            requests, responses and any exceptions encountered, to a text file.
+            Purpose       :	This method is used to log messages in a plain text file
             Inputs	      :	string message - message that is being sent to the text file
+                            string logPath - path of the log file
             Returns	      :	NONE
         */
         public void LogText(string message, string logPath)
