@@ -7,15 +7,19 @@ using System.Collections.Specialized;
 using System.Web;
 using System.Configuration;
 using System.IO;
+using System.Threading;
+using System.Diagnostics;
 
 namespace LoggingService
 {
     class LoggingEngine
     {
-        private static Dictionary<string, Dictionary<int, string>> IP_Tracker = new Dictionary<string, Dictionary<int, string>>();
+        private static Dictionary<string, List<DateTime>> IP_Tracker = new Dictionary<string, List<DateTime>>();
         string logPath = ConfigurationManager.AppSettings.Get("logPath");
         string logFormat = ConfigurationManager.AppSettings.Get("logFormat");
         string logMessage = "";
+        string blockedIP = "";
+        Stopwatch stopWatch = new Stopwatch();
 
         /*  -- Function Header
             Name	:	ProcessRequest()
@@ -30,17 +34,34 @@ namespace LoggingService
             NameValueCollection qsCollection = HttpUtility.ParseQueryString(queryString);  // parse query string sent from client
             string requestType = qsCollection["request"];   // parse request type of the query string
             string local_ip = qsCollection["local_ip"];
+            string hostname = qsCollection["hostname"];
+            string errorLevel = qsCollection["errorLevel"];
+            string message = qsCollection["message"];
             string response = null;
 
             switch (requestType)
             {
                 case "LOGGING":
-                    preventAbuse(local_ip);
-                    DateTime localDate = DateTime.Now;
-                    string hostname = qsCollection["hostname"];                  
-                    string errorLevel = qsCollection["errorLevel"];
-                    string message = qsCollection["message"];
+                    if (stopWatch.ElapsedMilliseconds > 10000)
+                    {
+                        blockedIP = "";
+                        stopWatch.Reset();
+                    }
 
+                    string msgResponse = checkLogAbuse(local_ip);
+                    if (msgResponse != null)
+                    {
+                        blockedIP = local_ip;
+                        stopWatch.Start();
+                        return msgResponse;
+                    }                 
+
+                    if (blockedIP == local_ip && stopWatch.ElapsedMilliseconds < 10000)
+                    {
+                        return "Your IP has been blocked. Please try again in 10 seconds!";
+                    }
+  
+                    DateTime localDate = DateTime.Now;
                     if (logFormat.ToLower() == "standard")
                     {
                         logMessage = $"{localDate} {local_ip} {hostname} {errorLevel}: {message}";
@@ -68,18 +89,36 @@ namespace LoggingService
             return response;
         }
 
-        public string preventAbuse(string currentIP)
+        public string checkLogAbuse(string currentIP)
         {         
             if (!(IP_Tracker.ContainsKey(currentIP)))
             {
-                Dictionary<int, string> currentIPCount = new Dictionary<int, string>();
-                currentIPCount.Add(currentIPCount.Count, DateTime.Now.ToString());
+                List<DateTime> currentIPCount = new List<DateTime>();
+                currentIPCount.Add(DateTime.Now);
                 IP_Tracker.Add(currentIP, currentIPCount);
             }
             else
             {
                 var currentIPValue = IP_Tracker[currentIP];
-                currentIPValue.Add(currentIPValue.Count, DateTime.Now.ToString());
+                currentIPValue.Add(DateTime.Now);
+            }
+
+            if (IP_Tracker.ContainsKey(currentIP))
+            {
+                var currentIPValue = IP_Tracker[currentIP];
+  
+                if (currentIPValue.Count % 10 == 0)
+                {
+                    var firstDateVal = currentIPValue.ElementAt(currentIPValue.Count - 1);
+                    var secondDateVal = currentIPValue.ElementAt(currentIPValue.Count - 10);
+                    var dateDifference = (firstDateVal - secondDateVal).TotalSeconds;
+
+                    if (dateDifference < 2)
+                    {
+                        Console.WriteLine(dateDifference);
+                        return "You have sent too many requests.";
+                    }
+                }          
             }
 
             return null;
