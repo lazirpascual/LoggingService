@@ -34,9 +34,6 @@ namespace LoggingService
             NameValueCollection qsCollection = HttpUtility.ParseQueryString(queryString);  // parse query string sent from client
             string requestType = qsCollection["request"];   // parse request type of the query string
             string local_ip = qsCollection["local_ip"];
-            string hostname = qsCollection["hostname"];
-            string errorLevel = qsCollection["errorLevel"];
-            string message = qsCollection["message"];
             string response = null;
 
             switch (requestType)
@@ -62,6 +59,10 @@ namespace LoggingService
                     }
   
                     DateTime localDate = DateTime.Now;
+                    string hostname = qsCollection["hostname"];                  
+                    string errorLevel = qsCollection["errorLevel"];
+                    string message = qsCollection["message"];
+
                     if (logFormat.ToLower() == "standard")
                     {
                         logMessage = $"{localDate} {local_ip} {hostname} {errorLevel}: {message}";
@@ -111,7 +112,7 @@ namespace LoggingService
                 {
                     var firstDateVal = currentIPValue.ElementAt(currentIPValue.Count - 1);
                     var secondDateVal = currentIPValue.ElementAt(currentIPValue.Count - 10);
-                    var dateDifference = (firstDateVal - secondDateVal).TotalSeconds;
+                    var dateDifference = (firstDateVal - secondDateVal ).TotalSeconds;
 
                     if (dateDifference < 2)
                     {
