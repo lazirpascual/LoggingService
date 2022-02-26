@@ -30,7 +30,8 @@ namespace LoggingService
     class Program
     {
         static LoggingEngine logEngine = new LoggingEngine();
-        
+        static volatile bool Run = true;
+
         static void Main(string[] args)
         {
             TcpListener server = null;
@@ -44,13 +45,17 @@ namespace LoggingService
                 Console.Write("Logging Service is currently running.\n");
                 Console.Write("Waiting for a connection... \n\n");
                 // Enter the listening loop.
-                while (true)
+                while (Run)
                 {
                     // Perform a blocking call to accept requests.
                     TcpClient client = server.AcceptTcpClient();
-                    ParameterizedThreadStart ts = new ParameterizedThreadStart(Worker);
-                    Thread clientThread = new Thread(ts);
-                    clientThread.Start(client);
+                    // start client thread only if a client has successfuly connected
+                    if (client.Connected)
+                    {
+                        ParameterizedThreadStart ts = new ParameterizedThreadStart(Worker);
+                        Thread clientThread = new Thread(ts);
+                        clientThread.Start(client);
+                    }
                 }
             }
             catch (SocketException e)
