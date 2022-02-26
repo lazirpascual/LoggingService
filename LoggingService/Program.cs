@@ -41,7 +41,7 @@ namespace LoggingService
                 IPAddress localAddr = IPAddress.Parse(ipAddress);
                 server = new TcpListener(localAddr, port);
                 server.Start(); // Start listening for client requests.
-                Console.Write("Server is currently running.\n");
+                Console.Write("Logging Service is currently running.\n");
                 Console.Write("Waiting for a connection... \n\n");
                 // Enter the listening loop.
                 while (true)

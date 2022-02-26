@@ -28,6 +28,7 @@ namespace LoggingService
         private static Dictionary<string, List<DateTime>> IP_Tracker = new Dictionary<string, List<DateTime>>();
         string logPath = ConfigurationManager.AppSettings.Get("logPath");
         string logFormat = ConfigurationManager.AppSettings.Get("logFormat");
+        string timeoutDuration = ConfigurationManager.AppSettings.Get("timeoutDuration");
         string logMessage = "";
         string blockedIP = "";
         Stopwatch stopWatch = new Stopwatch();
@@ -51,7 +52,7 @@ namespace LoggingService
             switch (requestType)
             {
                 case "LOGGING":
-                    if (stopWatch.ElapsedMilliseconds > 10000)
+                    if (stopWatch.ElapsedMilliseconds > Int32.Parse(timeoutDuration) * 1000)
                     {
                         blockedIP = "";
                         stopWatch.Reset();
@@ -65,9 +66,9 @@ namespace LoggingService
                         return msgResponse;
                     }                 
 
-                    if (blockedIP == local_ip && stopWatch.ElapsedMilliseconds < 10000)
+                    if (blockedIP == local_ip && stopWatch.ElapsedMilliseconds < Int32.Parse(timeoutDuration) * 1000)
                     {
-                        return "Your IP has been blocked. Please try again in 10 seconds!";
+                        return $"Your IP has been blocked. Please try again in {timeoutDuration} seconds!";
                     }
   
                     DateTime localDate = DateTime.Now;
