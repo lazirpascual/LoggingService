@@ -47,6 +47,7 @@ namespace LoggingService
             string local_ip = qsCollection["local_ip"];
             string response = null;
 
+
             switch (requestType)
             {
                 case "LOGGING":
@@ -97,7 +98,7 @@ namespace LoggingService
                     break;
             }
 
-            DisplayOutput(queryString, response, requestType, local_ip);
+            DisplayOutput(qsCollection, response, requestType, local_ip);
             return response;
         }
 
@@ -126,15 +127,15 @@ namespace LoggingService
             {
                 var currentIPValue = IP_Tracker[currentIP];
   
-                if (currentIPValue.Count % 10 == 0)
+                if (currentIPValue.Count % 5 == 0)
                 {
                     var firstDateVal = currentIPValue.ElementAt(currentIPValue.Count - 1);
-                    var secondDateVal = currentIPValue.ElementAt(currentIPValue.Count - 10);
+                    var secondDateVal = currentIPValue.ElementAt(currentIPValue.Count - 5);
                     var dateDifference = (firstDateVal - secondDateVal ).TotalSeconds;
 
-                    if (dateDifference < 2)
+                    if (dateDifference < 1)
                     {
-                        Console.WriteLine(dateDifference);
+                        //Console.WriteLine(dateDifference);
                         return "You have sent too many requests.";
                     }
                 }          
@@ -163,15 +164,15 @@ namespace LoggingService
             Purpose :	This method contains the logic of displaying output when a client makes a 
                         connects with a server. The request type, data being received and data being
                         sent back are all displayed on the console.
-            Inputs	:	string request - string that contains data being received from client
+            Inputs	:	NameValueCollection qsCollection - parsed request sent from client
                         string response - string that is being sent back to the client
                         string responseType - type of request currently being processed
             Returns	:	NONE
         */
-        public void DisplayOutput(string request, string response, string requestType, string ipAddress)
+        public void DisplayOutput(NameValueCollection qsCollection, string response, string requestType, string ipAddress)
         {
             Console.WriteLine($"A client with IP of {ipAddress} has connected with a {requestType} request.");
-            Console.WriteLine("Received: {0}", request);
+            Console.WriteLine("Received: Hostname: {0}, LogLevel: {1}, Details: {2}", qsCollection["hostname"], qsCollection["errorLevel"], qsCollection["message"]);
             Console.WriteLine("Sent: {0}\n", response);
         }
     }
