@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 FILE                : LoggingEngine.cs
 PROJECT			    : A3 - Network Application Development
 PROGRAMMER		    : Lazir Pascual, Rohullah Noory
@@ -112,34 +111,31 @@ namespace LoggingService
         */
         public string checkLogAbuse(string currentIP)
         {         
+            // if the ip doesn't exist in the dictionary, add it and log the time of the request
             if (!(IP_Tracker.ContainsKey(currentIP)))
             {
                 List<DateTime> currentIPCount = new List<DateTime>();
                 currentIPCount.Add(DateTime.Now);
                 IP_Tracker.Add(currentIP, currentIPCount);
             }
+            // if the ip already exists, simply log the time of the request and check if more than
+            // 5 requests have been received from the same IP within one second
             else
             {
                 var currentIPValue = IP_Tracker[currentIP];
                 currentIPValue.Add(DateTime.Now);
-            }
 
-            if (IP_Tracker.ContainsKey(currentIP))
-            {
-                var currentIPValue = IP_Tracker[currentIP];
-  
                 if (currentIPValue.Count % 5 == 0)
                 {
                     var firstDateVal = currentIPValue.ElementAt(currentIPValue.Count - 1);
                     var secondDateVal = currentIPValue.ElementAt(currentIPValue.Count - 5);
-                    var dateDifference = (firstDateVal - secondDateVal ).TotalSeconds;
+                    var dateDifference = (firstDateVal - secondDateVal).TotalSeconds;
 
                     if (dateDifference < 1)
                     {
-                        //Console.WriteLine(dateDifference);
                         return "You have sent too many requests.";
                     }
-                }          
+                }
             }
 
             return null;
